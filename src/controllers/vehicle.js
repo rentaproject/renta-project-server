@@ -95,4 +95,27 @@ module.exports = {
       return console.log(error);
     }
   },
+  getVehicleByType: async (request, response) => {
+    try {
+      const { id } = request.params;
+      let { page, limit } = request.query;
+
+      page = Number(page) || 1;
+      limit = Number(limit) || 5;
+
+      const offset = page * limit - limit;
+
+      const result = await vehicleModel.getVehicleByType(id, offset, limit);
+
+      if (result.rows.length < 1) {
+        return wrapper.response(response, 404, "No data found", null);
+      }
+
+      return wrapper.response(response, 200, "Success get data", result.rows);
+    } catch (error) {
+      console.log(error);
+
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
 };

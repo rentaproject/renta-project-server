@@ -52,4 +52,18 @@ module.exports = {
         }
       );
     }),
+  getVehicleByType: (type, offset, limit) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM vehicles WHERE "typeId" = $1 LIMIT $2 OFFSET $3`,
+        [type, limit, offset],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
 };
