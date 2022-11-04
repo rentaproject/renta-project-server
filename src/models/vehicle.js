@@ -1,11 +1,12 @@
 const connection = require("../config/postgresql");
 
 module.exports = {
-  getAllVehicles: () =>
+  // sort by ASC or DESC still not working
+  getAllVehicles: (keyword, limit, offset, orderBy, orderType) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM vehicles",
-        // [limit, offset, sort_by, asc],
+        `SELECT * FROM vehicles WHERE name ilike '%' || $1 ||'%' ORDER BY $2 ${orderType.toLowerCase()} LIMIT $3 OFFSET $4`,
+        [keyword, orderBy, limit, offset],
         (error, result) => {
           if (!error) {
             resolve(result);

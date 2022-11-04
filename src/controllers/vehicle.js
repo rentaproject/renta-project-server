@@ -4,7 +4,25 @@ const vehicleModel = require("../models/vehicle");
 module.exports = {
   getAllVehicles: async (request, response) => {
     try {
-      const result = await vehicleModel.getAllVehicles();
+      let { limit, page, keyword, orderBy, orderType } = request.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 5;
+      keyword = keyword || "";
+      orderBy = orderBy || "name";
+      orderType =
+        orderType.toLowerCase() !== "asc" || orderType.toLowerCase() !== "desc"
+          ? "asc"
+          : orderType.toLowerCase();
+
+      const offset = page * limit - limit;
+      // console.log(offset);
+      const result = await vehicleModel.getAllVehicles(
+        keyword,
+        limit,
+        offset,
+        orderBy,
+        orderType
+      );
 
       if (result.rows.length < 1) {
         return wrapper.response(
@@ -21,7 +39,8 @@ module.exports = {
         result.rows
       );
     } catch (error) {
-      return console.log(error);
+      console.log(error);
+      return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
   getVehicleById: async (request, response) => {
@@ -62,7 +81,6 @@ module.exports = {
         description,
         rentCount,
       };
-      console.log("ss");
 
       // console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
