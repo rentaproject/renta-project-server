@@ -89,4 +89,18 @@ module.exports = {
         }
       );
     }),
+  deleteVehicle: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `DELETE FROM vehicles WHERE "vehicleId" = $1`,
+        [id],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
 };
