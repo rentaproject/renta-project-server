@@ -66,4 +66,27 @@ module.exports = {
         }
       );
     }),
+  updateVehicle: (data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE vehicles SET "name" = $1, "typeId" = $2, "status" = $3, "price" = $4, "stock" = $5, "description" = $6, "rentCount" = $7 WHERE "vehicleId" = $8 RETURNING *`,
+        [
+          data.name,
+          data.typeId,
+          data.status,
+          data.price,
+          data.stock,
+          data.description,
+          data.rentCount,
+          data.id,
+        ],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
 };
