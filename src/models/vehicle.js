@@ -1,11 +1,12 @@
 const connection = require("../config/postgresql");
 
 module.exports = {
-  getAllVehicles: () =>
+  // sort by ASC or DESC still not working
+  getAllVehicles: (keyword, limit, offset, orderBy, orderType) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM vehicles",
-        // [limit, offset, sort_by, asc],
+        `SELECT * FROM vehicles WHERE name ilike '%' || $1 ||'%' ORDER BY $2 ${orderType.toLowerCase()} LIMIT $3 OFFSET $4`,
+        [keyword, orderBy, limit, offset],
         (error, result) => {
           if (!error) {
             resolve(result);
@@ -41,6 +42,43 @@ module.exports = {
           data.stock,
           data.description,
           data.rentCount,
+        ],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
+  getVehicleByType: (type, offset, limit) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM vehicles WHERE "typeId" = $1 LIMIT $2 OFFSET $3`,
+        [type, limit, offset],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
+  updateVehicle: (data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE vehicles SET "name" = $1, "typeId" = $2, "status" = $3, "price" = $4, "stock" = $5, "description" = $6, "rentCount" = $7 WHERE "vehicleId" = $8 RETURNING *`,
+        [
+          data.name,
+          data.typeId,
+          data.status,
+          data.price,
+          data.stock,
+          data.description,
+          data.rentCount,
+          data.id,
         ],
         (error, result) => {
           if (!error) {
