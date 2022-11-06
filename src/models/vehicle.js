@@ -89,11 +89,32 @@ module.exports = {
         }
       );
     }),
+
   deleteVehicle: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
         `DELETE FROM vehicles WHERE "vehicleId" = $1`,
         [id],
+
+  updateReservationVehicle: (data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE vehicles SET "rentCount" = "rentCount" + 1, "stock" = "stock" - ${data.stock} WHERE "vehicleId" = $1 RETURNING *`,
+        [data.id],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
+  updateReturnVehicle: (data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE vehicles SET "stock" = "stock" + ${data.stock} WHERE "vehicleId" = $1 RETURNING *`,
+        [data.id],
         (error, result) => {
           if (!error) {
             resolve(result);
