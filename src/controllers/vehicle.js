@@ -206,4 +206,27 @@ module.exports = {
       return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
+  deleteVehicle: async (request, response) => {
+    try {
+      const { id } = request.params;
+
+      const checkData = await vehicleModel.getVehicleById(id);
+
+      if (!checkData.rowCount) {
+        return wrapper.response(
+          response,
+          404,
+          "No data found with given ID",
+          null
+        );
+      }
+
+      await vehicleModel.deleteVehicle(id);
+
+      return wrapper.response(response, 204, "Success delete data", []);
+    } catch (error) {
+      console.log(error);
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
 };
