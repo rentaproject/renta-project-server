@@ -114,7 +114,7 @@ module.exports = {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
       const { id } = request.params;
-      const data = {
+      const setData = {
         typeId,
         name,
         status,
@@ -125,7 +125,74 @@ module.exports = {
         id,
       };
 
-      const result = await vehicleModel.updateVehicle(data);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in setData) {
+        if (!setData[data]) {
+          delete setData[data];
+        }
+      }
+
+      const result = await vehicleModel.updateVehicle(setData);
+
+      return wrapper.response(
+        response,
+        200,
+        "Success update data",
+        result.rows
+      );
+    } catch (error) {
+      console.log(error);
+
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
+  updateReservationVehicle: async (request, response) => {
+    try {
+      const { stock } = request.body;
+      const { id } = request.params;
+      const setData = {
+        stock,
+        id,
+      };
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in setData) {
+        if (!setData[data]) {
+          delete setData[data];
+        }
+      }
+
+      const result = await vehicleModel.updateReservationVehicle(setData);
+
+      return wrapper.response(
+        response,
+        200,
+        "Success update data",
+        result.rows
+      );
+    } catch (error) {
+      console.log(error);
+
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
+  updateReturnVehicle: async (request, response) => {
+    try {
+      const { stock } = request.body;
+      const { id } = request.params;
+      const setData = {
+        stock,
+        id,
+      };
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in setData) {
+        if (!setData[data]) {
+          delete setData[data];
+        }
+      }
+
+      const result = await vehicleModel.updateReturnVehicle(setData);
 
       return wrapper.response(
         response,
