@@ -89,6 +89,13 @@ module.exports = {
         }
       );
     }),
+
+  deleteVehicle: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `DELETE FROM vehicles WHERE "vehicleId" = $1`,
+        [id],
+
   updateReservationVehicle: (data) =>
     new Promise((resolve, reject) => {
       connection.query(
