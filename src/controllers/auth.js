@@ -23,12 +23,12 @@ module.exports = {
         return wrapper.response(response, 400, "Password at least 6 character");
       }
 
-      const hash = bcrypt.hashSync(password, 10);
+      const hashPass = bcrypt.hashSync(password, 10);
       const setData = {
         name,
         email,
         role: "admin",
-        password: hash,
+        password: hashPass,
       };
 
       const minm = 100000;
@@ -80,12 +80,12 @@ module.exports = {
         return wrapper.response(response, 400, "Password at least 6 character");
       }
 
-      const hash = bcrypt.hashSync(password, 10);
+      const hashPass = bcrypt.hashSync(password, 10);
       const setData = {
         name,
         email,
         role: "user",
-        password: hash,
+        password: hashPass,
       };
 
       const minm = 100000;
@@ -292,9 +292,9 @@ module.exports = {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
 
-      const hash = bcrypt.hashSync(newPassword, 10);
+      const hashPass = bcrypt.hashSync(newPassword, 10);
       const setData = {
-        password: hash,
+        password: hashPass,
       };
       await authModel.updatePassword(userId, setData);
 
@@ -398,8 +398,7 @@ module.exports = {
         return wrapper.response(response, 400, "Image must be filled", null);
       }
       const { filename } = request.file;
-      console.log(isFalid)
-      console.log(filename)
+      
       // console.log(request.file)
       let newImages;
 
@@ -466,7 +465,7 @@ module.exports = {
         )
       }
       const hashPw = hash.hashPass(confirmPassword);
-      console.log(hashPw)
+      
       const updatePassword = {
         password: hashPw
       }

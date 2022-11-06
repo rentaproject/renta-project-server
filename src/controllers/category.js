@@ -7,7 +7,6 @@ module.exports = {
       const result = await categoryModel.getAllCategory();
       return wrapper.response(response, 200, "Success get data", result.rows);
     } catch (error) {
-      console.log(error);
       return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
