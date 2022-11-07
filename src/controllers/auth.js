@@ -117,7 +117,6 @@ module.exports = {
         newResult
       );
     } catch (error) {
-      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
@@ -206,11 +205,11 @@ module.exports = {
   logout: async (request, response) => {
     try {
       const authHeader = request.headers.authorization;
-      // const { refreshtoken } = request.headers;
+      const { refreshtoken } = request.headers;
 
       const token = authHeader.split(" ")[1];
       client.setEx(token, 3600 * 2, token);
-      // client.setEx(refreshtoken, 3600 * 2, refreshtoken);
+      client.setEx(refreshtoken, 3600 * 2, refreshtoken);
 
       return wrapper.response(response, 200, "Success Logout");
     } catch (error) {
