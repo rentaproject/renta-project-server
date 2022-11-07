@@ -363,11 +363,11 @@ module.exports = {
       }
       // const dateTime = updateTime.dateTime();
       const updateData = {
-        username,
-        gender,
-        address,
-        dateOfBirth,
-        phoneNumber,
+        username: username === ""||null?checkId.rows[0].username : username ,
+        gender: gender === ""||null?checkId.rows[0].gender : gender,
+        address: address === ""||null?checkId.rows[0].address : address,
+        dateOfBirth: dateOfBirth === ""||null?checkId.rows[0].dateOfBirth : dateOfBirth,
+        phoneNumber: phoneNumber === ""||null?checkId.rows[0].phoneNumber : phoneNumber,
       };
 
       await authModel.updateProfile(id, updateData);
