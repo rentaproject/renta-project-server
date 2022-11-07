@@ -80,4 +80,18 @@ module.exports = {
         }
       );
     }),
+  deleteReservation: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `DELETE FROM reservation WHERE "reservationId" = $1`,
+        [id],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
 };

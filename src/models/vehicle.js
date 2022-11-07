@@ -31,7 +31,7 @@ module.exports = {
   getVehicleById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM vehicles WHERE "vehicleId" = $1`,
+        `SELECT v.*, l."name" as "locationName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" WHERE v."vehicleId" = $1`,
         [id],
         (error, result) => {
           if (!error) {
