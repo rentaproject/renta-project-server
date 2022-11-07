@@ -44,7 +44,7 @@ module.exports = {
     }),
   addNewVehicle: (data) =>
     new Promise((resolve, reject) => {
-      let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount"`;
+      let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
       const sqlValues = [
         data.typeId,
         data.name,
@@ -53,12 +53,13 @@ module.exports = {
         data.stock,
         data.description,
         data.rentCount,
+        data.locationId,
       ];
 
-      let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7`;
+      let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
       const sqlQuery3 = `) RETURNING *`;
       let i = 1;
-      let j = 8;
+      let j = 9;
 
       // eslint-disable-next-line array-callback-return
       data.images.map((image) => {
@@ -70,6 +71,7 @@ module.exports = {
       });
 
       const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
+
       connection.query(finalQuery, sqlValues, (error, result) => {
         if (!error) {
           resolve(result);
