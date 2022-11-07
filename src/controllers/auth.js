@@ -371,6 +371,13 @@ module.exports = {
         phoneNumber,
       };
 
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in updateData) {
+        if (!updateData[data]) {
+          delete updateData[data];
+        }
+      }
+
       await authModel.updateProfile(id, updateData);
       const result = await authModel.getUserByID(id);
 
