@@ -44,41 +44,65 @@ module.exports = {
     }),
   addNewVehicle: (data) =>
     new Promise((resolve, reject) => {
-      let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
-      const sqlValues = [
-        data.typeId,
-        data.name,
-        data.status,
-        data.price,
-        data.stock,
-        data.description,
-        data.rentCount,
-        data.locationId,
-      ];
-
-      let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
-      const sqlQuery3 = `) RETURNING *`;
-      let i = 1;
-      let j = 9;
-
-      // eslint-disable-next-line array-callback-return
-      data.images.map((image) => {
-        sqlQuery1 += `, image${i}`;
-        sqlQuery2 += `, $${j}`;
-        sqlValues.push(image);
-        i += 1;
-        j += 1;
-      });
-
-      const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
-
-      connection.query(finalQuery, sqlValues, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(new Error(error));
+      connection.query(
+        `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId", image1, image2, image3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        [
+          data.typeId,
+          data.name,
+          data.status,
+          data.price,
+          data.stock,
+          data.description,
+          data.rentCount,
+          data.locationId,
+          data.image1,
+          data.image2,
+          data.image3,
+        ],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
         }
-      });
+      );
+
+      // let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
+      // const sqlValues = [
+      //   data.typeId,
+      //   data.name,
+      //   data.status,
+      //   data.price,
+      //   data.stock,
+      //   data.description,
+      //   data.rentCount,
+      //   data.locationId,
+      // ];
+
+      // let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
+      // const sqlQuery3 = `) RETURNING *`;
+      // let i = 1;
+      // let j = 9;
+
+      // // eslint-disable-next-line array-callback-return
+      // data.images.map((image) => {
+      //   sqlQuery1 += `, image${i}`;
+      //   sqlQuery2 += `, $${j}`;
+      //   sqlValues.push(image);
+      //   i += 1;
+      //   j += 1;
+      // });
+
+      // const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
+
+      // connection.query(finalQuery, sqlValues, (error, result) => {
+      //   if (!error) {
+      //     resolve(result);
+      //   } else {
+      //     reject(new Error(error));
+      //   }
+      // });
     }),
   getVehicleByType: (type, offset, limit) =>
     new Promise((resolve, reject) => {
