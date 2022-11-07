@@ -44,25 +44,41 @@ module.exports = {
     }),
   addNewVehicle: (data) =>
     new Promise((resolve, reject) => {
-      connection.query(
-        `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [
-          data.typeId,
-          data.name,
-          data.status,
-          data.price,
-          data.stock,
-          data.description,
-          data.rentCount,
-        ],
-        (error, result) => {
-          if (!error) {
-            resolve(result);
-          } else {
-            reject(new Error(error));
-          }
+      let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
+      const sqlValues = [
+        data.typeId,
+        data.name,
+        data.status,
+        data.price,
+        data.stock,
+        data.description,
+        data.rentCount,
+        data.locationId,
+      ];
+
+      let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
+      const sqlQuery3 = `) RETURNING *`;
+      let i = 1;
+      let j = 9;
+
+      // eslint-disable-next-line array-callback-return
+      data.images.map((image) => {
+        sqlQuery1 += `, image${i}`;
+        sqlQuery2 += `, $${j}`;
+        sqlValues.push(image);
+        i += 1;
+        j += 1;
+      });
+
+      const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
+
+      connection.query(finalQuery, sqlValues, (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
         }
-      );
+      });
     }),
   getVehicleByType: (type, offset, limit) =>
     new Promise((resolve, reject) => {
