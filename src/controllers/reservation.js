@@ -27,42 +27,20 @@ module.exports = {
       };
 
       const result = await reservationModel.createReservation(setData);
-      //   if (result > 1) {
-      //     await vehicleModel
-      //       .updateVehicle({ stock: setData.quantity, id: setData.vehicleId })
-      //       .then(() => {
-      //         wrapper.response(
-      //           response,
-      //           "Success",
-      //           200,
-      //           "Reservation Successfull",
-      //           result.rows
-      //         );
-      //       })
-      //       .catch((err) => {
-      //         wrapper.response(
-      //           response,
-      //           "Error",
-      //           500,
-      //           "Failed update vehicle when reservation please try again later",
-      //           err
-      //         );
-      //       });
-      //   } else {
-      //     wrapper.response(
-      //       response,
-      //       "Error",
-      //       500,
-      //       "Failed create data reservation please try again later"
-      //     );
-      //   }
 
-      return wrapper.response(
-        response,
-        200,
-        "success create reservation",
-        result.rows
-      );
+      const setDataMidtrans = {
+        // id: result.rows.reservationId,
+        id: 1,
+        totalPayment,
+      };
+
+      const resultMidtrans = await snapMidtrans.post(setDataMidtrans);
+      const newResult = result.rows;
+
+      return wrapper.response(response, 200, "success create reservation", {
+        newResult,
+        redirectUrl: resultMidtrans.redirect_url,
+      });
     } catch (error) {
       console.log(error);
       return wrapper.response(response, 400, "Bad Request", null);

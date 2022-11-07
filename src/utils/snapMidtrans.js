@@ -5,7 +5,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const parameter = {
         transaction_details: {
-          order_id: data.bookingId,
+          order_id: data.id,
           gross_amount: data.totalPayment,
         },
         credit_card: {

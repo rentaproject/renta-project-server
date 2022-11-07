@@ -175,7 +175,7 @@ module.exports = {
       return wrapper.response(
         response,
         200,
-        "Success update data",
+        "Success update data reserved vehicle",
         result.rows
       );
     } catch (error) {
@@ -205,7 +205,7 @@ module.exports = {
       return wrapper.response(
         response,
         200,
-        "Success update data",
+        "Success update data return vehicle",
         result.rows
       );
     } catch (error) {
