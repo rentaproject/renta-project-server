@@ -6,18 +6,24 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const compression = require("compression");
+const pool = require("./src/config/postgresql");
 const routerNavigation = require("./src/routes");
 
 const app = express();
 const port = process.env.PORT || 3001;
-
-app.use(cors());
-app.use(morgan("dev"));
-app.use(helmet());
-app.use(xss());
-app.use(compression());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+pool
+  .connect()
+  .then(() => {
+    console.log("db conected");
+    app.use(cors());
+    app.use(morgan("dev"));
+    app.use(helmet());
+    app.use(xss());
+    app.use(compression());
+    app.use(express.urlencoded({ extended: false }));
+    app.use(express.json());
+  })
+  .catch((error) => console.log(error));
 
 app.use("/api", routerNavigation);
 
