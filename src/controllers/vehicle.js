@@ -4,16 +4,20 @@ const vehicleModel = require("../models/vehicle");
 module.exports = {
   getAllVehicles: async (request, response) => {
     try {
-      let { limit, page, keyword, orderBy, orderType } = request.query;
+      let { limit, page, keyword, orderBy, orderType, location } =
+        request.query;
       page = Number(page) || 1;
       limit = Number(limit) || 5;
       keyword = keyword || "";
-      orderBy = orderBy || "name";
-      orderType = orderType || "asc";
-      orderType =
-        orderType.toLowerCase() !== "asc" || orderType.toLowerCase() !== "desc"
-          ? "asc"
-          : orderType.toLowerCase();
+      orderBy = orderBy || "rentCount";
+      location = location || "";
+
+      if (
+        orderType.toLowerCase() !== "asc" &&
+        orderType.toLowerCase() !== "desc"
+      ) {
+        orderType = "asc";
+      }
 
       const offset = page * limit - limit;
       // console.log(offset);
@@ -22,7 +26,8 @@ module.exports = {
         limit,
         offset,
         orderBy,
-        orderType
+        orderType,
+        location
       );
 
       if (result.rows.length < 1) {
@@ -55,7 +60,9 @@ module.exports = {
         result.rows
       );
     } catch (error) {
-      return console.log(error);
+      console.log(error);
+
+      return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
   addNewVehicle: async (request, response) => {
@@ -83,7 +90,8 @@ module.exports = {
         result.rows
       );
     } catch (error) {
-      return console.log(error);
+      console.log(error);
+      return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
   getVehicleByType: async (request, response) => {
@@ -203,6 +211,29 @@ module.exports = {
     } catch (error) {
       console.log(error);
 
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
+  deleteVehicle: async (request, response) => {
+    try {
+      const { id } = request.params;
+
+      const checkData = await vehicleModel.getVehicleById(id);
+
+      if (!checkData.rowCount) {
+        return wrapper.response(
+          response,
+          404,
+          "No data found with given ID",
+          null
+        );
+      }
+
+      await vehicleModel.deleteVehicle(id);
+
+      return wrapper.response(response, 204, "Success delete data", []);
+    } catch (error) {
+      console.log(error);
       return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },

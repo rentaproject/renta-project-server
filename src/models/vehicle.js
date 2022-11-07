@@ -2,19 +2,31 @@ const connection = require("../config/postgresql");
 
 module.exports = {
   // sort by ASC or DESC still not working
-  getAllVehicles: (keyword, limit, offset, orderBy, orderType) =>
+  getAllVehicles: (keyword, limit, offset, orderBy, orderType, location) =>
     new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT * FROM vehicles WHERE name ilike '%' || $1 ||'%' ORDER BY $2 ${orderType.toLowerCase()} LIMIT $3 OFFSET $4`,
-        [keyword, orderBy, limit, offset],
-        (error, result) => {
-          if (!error) {
-            resolve(result);
-          } else {
-            reject(new Error(error));
-          }
+      let i = 1;
+      let sqlQuery = `SELECT v.*, l."name" as "locationName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" WHERE v.name ilike '%' || $${i} ||'%' `;
+
+      const sqlQueryValues = [keyword];
+      if (location) {
+        i += 1;
+        sqlQuery += `AND v."locationId" = $${i} `;
+        sqlQueryValues.push(location);
+      }
+
+      sqlQuery += `ORDER BY v."${orderBy}" ${orderType} LIMIT $${
+        i + 1
+      } OFFSET $${i + 2}`;
+
+      sqlQueryValues.push(limit, offset);
+
+      connection.query(sqlQuery, sqlQueryValues, (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
         }
-      );
+      });
     }),
   getVehicleById: (id) =>
     new Promise((resolve, reject) => {
@@ -80,6 +92,20 @@ module.exports = {
           data.rentCount,
           data.id,
         ],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
+  deleteVehicle: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `DELETE FROM vehicles WHERE "vehicleId" = $1`,
+        [id],
         (error, result) => {
           if (!error) {
             resolve(result);
