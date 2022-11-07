@@ -136,6 +136,29 @@ module.exports = {
       return wrapper.response(response, 500, "Internal Server Error", null);
     }
   },
+  deleteReservation: async (request, response) => {
+    try {
+      const { id } = request.params;
+
+      const checkData = await reservationModel.getAllReservationById(id);
+
+      if (!checkData.rowCount) {
+        return wrapper.response(
+          response,
+          404,
+          "No data found with given ID",
+          null
+        );
+      }
+
+      await reservationModel.deleteReservation(id);
+
+      return wrapper.response(response, 204, "Success delete data", []);
+    } catch (error) {
+      console.log(error);
+      return wrapper.response(response, 500, "Internal Server Error", null);
+    }
+  },
   midtransNotification: async (request, response) => {
     try {
       const result = await snapMidtrans.notif(request.body);
