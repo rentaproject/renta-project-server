@@ -406,8 +406,6 @@ module.exports = {
         return wrapper.response(response, 400, "Image must be filled", null);
       }
       const { filename } = request.file;
-
-      // console.log(request.file)
       let newImages;
 
       if (isFalid.rows.length < 1) {
