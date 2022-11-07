@@ -32,7 +32,7 @@ module.exports = {
         cb(null, true);
       },
       limits: { fileSize: largeSize },
-    // }).single("image", { timeout: 600000 });
+      // }).single("image", { timeout: 600000 });
     }).single("image");
 
     upload(request, response, (err) => {
