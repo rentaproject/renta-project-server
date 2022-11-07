@@ -11,6 +11,7 @@ module.exports = {
       keyword = keyword || "";
       orderBy = orderBy || "rentCount";
       location = location || "";
+      orderType = orderType || "asc";
 
       if (
         orderType.toLowerCase() !== "asc" &&
@@ -70,6 +71,19 @@ module.exports = {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
 
+      if (request.files.length < 1) {
+        return wrapper.response(
+          response,
+          400,
+          "Bad request, add at least 1 image",
+          []
+        );
+      }
+
+      const images = [];
+
+      request.files.map((image) => images.push(image.filename));
+
       const data = {
         typeId,
         name,
@@ -78,9 +92,9 @@ module.exports = {
         stock,
         description,
         rentCount,
+        images,
       };
 
-      // console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
 
       return wrapper.response(
