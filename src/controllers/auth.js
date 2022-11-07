@@ -397,7 +397,7 @@ module.exports = {
         return wrapper.response(response, 400, "Image must be filled", null);
       }
       const { filename } = request.file;
-      
+      console.log()
       // console.log(request.file)
       let newImages;
 
