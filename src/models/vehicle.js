@@ -5,7 +5,7 @@ module.exports = {
   getAllVehicles: (keyword, limit, offset, orderBy, orderType, location) =>
     new Promise((resolve, reject) => {
       let i = 1;
-      let sqlQuery = `SELECT v.*, l."name" as "locationName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" WHERE v.name ilike '%' || $${i} ||'%' `;
+      let sqlQuery = `SELECT v.*, l."name" as "locationName", t."name" as "typeName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" JOIN types t on v."typeId" = t."typeId" WHERE v.name ilike '%' || $${i} ||'%' `;
 
       const sqlQueryValues = [keyword];
       if (location) {
@@ -31,7 +31,7 @@ module.exports = {
   getVehicleById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT v.*, l."name" as "locationName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" WHERE v."vehicleId" = $1`,
+        `SELECT v.*, l."name" as "locationName", t."name" as "typeName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" JOIN types t on v."typeId" = t."typeId" WHERE v."vehicleId" = $1`,
         [id],
         (error, result) => {
           if (!error) {
@@ -83,7 +83,7 @@ module.exports = {
   getVehicleByType: (type, offset, limit) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM vehicles WHERE "typeId" = $1 LIMIT $2 OFFSET $3`,
+        `SELECT v.*, l."name" as "locationName", t."name" as "typeName" FROM vehicles v JOIN locations l on v."locationId" = l."locationId" JOIN types t on v."typeId" = t."typeId" WHERE v."typeId" = $1 LIMIT $2 OFFSET $3`,
         [type, limit, offset],
         (error, result) => {
           if (!error) {
