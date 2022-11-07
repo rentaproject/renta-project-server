@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const wrapper = require("../utils/wrapper");
 const vehicleModel = require("../models/vehicle");
 
@@ -11,6 +12,7 @@ module.exports = {
       keyword = keyword || "";
       orderBy = orderBy || "rentCount";
       location = location || "";
+      orderType = orderType || "asc";
 
       if (
         orderType.toLowerCase() !== "asc" &&
@@ -69,6 +71,23 @@ module.exports = {
     try {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
+      // console.log(Object.keys(request.files).length);
+      if (Object.keys(request.files).length < 1) {
+        return wrapper.response(
+          response,
+          400,
+          "Bad request, add at least 1 image",
+          []
+        );
+      }
+
+      const images = [];
+      // eslint-disable-next-line array-callback-return
+      Object.keys(request.files).map((key) => {
+        images.push(request.files[key][0].filename);
+      });
+
+      //   request.files.map((image) => images.push(image.filename));
 
       const data = {
         typeId,
@@ -78,9 +97,9 @@ module.exports = {
         stock,
         description,
         rentCount,
+        images,
       };
 
-      // console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
 
       return wrapper.response(
@@ -175,7 +194,7 @@ module.exports = {
       return wrapper.response(
         response,
         200,
-        "Success update data",
+        "Success update data reserved vehicle",
         result.rows
       );
     } catch (error) {
@@ -205,7 +224,7 @@ module.exports = {
       return wrapper.response(
         response,
         200,
-        "Success update data",
+        "Success update data return vehicle",
         result.rows
       );
     } catch (error) {
