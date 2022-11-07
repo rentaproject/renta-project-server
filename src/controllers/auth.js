@@ -97,7 +97,7 @@ module.exports = {
         name,
         subject: "Email Verification",
         template: "verify.html",
-        actionUrl: `localhost:3001/api/auth/verify/${otp}`,
+        actionUrl: `https://renta-project-server.vercel.app/api/auth/verify/${otp}`,
       };
       await sendMail(setMailOptions);
 
@@ -152,15 +152,14 @@ module.exports = {
         expiresIn: "24h",
       });
 
-      // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN, {
-      //   expiresIn: "36h",
-      // });
+      const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN, {
+        expiresIn: "36h",
+      });
 
       const newResult = {
         userId: checkEmail.rows[0].userId,
-        role: checkEmail.rows[0].role,
         token,
-        // refreshToken,
+        refreshToken,
       };
       return wrapper.response(response, 200, "Success Login", newResult);
     } catch (error) {
@@ -240,9 +239,9 @@ module.exports = {
       const setMailOptions = {
         to: email,
         name,
-        subject: "Email Verification",
-        template: "verify.html",
-        actionUrl: `localhost:3001/api/users/verify/${otp}`,
+        subject: "Reset Password",
+        template: "forgotpw.html",
+        actionUrl: `http://localhost:3000/auth/change-password/${otp}`,
       };
 
       client.set(`${otp}`, JSON.stringify(userId));
