@@ -71,23 +71,10 @@ module.exports = {
     try {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
-      // console.log(Object.keys(request.files).length);
-      if (Object.keys(request.files).length < 1) {
-        return wrapper.response(
-          response,
-          400,
-          "Bad request, add at least 1 image",
-          []
-        );
-      }
 
-      const images = [];
-      // eslint-disable-next-line array-callback-return
-      Object.keys(request.files).map((key) => {
-        images.push(request.files[key][0].filename);
-      });
-
-      //   request.files.map((image) => images.push(image.filename));
+      const image1 = request.files.image1[0].filename;
+      const image2 = request.files.image2[0].filename;
+      const image3 = request.files.image3[0].filename;
 
       const data = {
         typeId,
@@ -97,11 +84,14 @@ module.exports = {
         stock,
         description,
         rentCount,
-        images,
+        image1,
+        image2,
+        image3,
       };
 
+      // console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
-
+      // console.log(result);
       return wrapper.response(
         response,
         200,
