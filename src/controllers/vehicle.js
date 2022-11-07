@@ -72,9 +72,9 @@ module.exports = {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
 
-      const image1 = request.files.image1[0].filename;
-      const image2 = request.files.image2[0].filename;
-      const image3 = request.files.image3[0].filename;
+      // const image1 = request.files.image1[0].filename;
+      // const image2 = request.files.image2[0].filename;
+      // const image3 = request.files.image3[0].filename;
 
       const data = {
         typeId,
@@ -84,12 +84,12 @@ module.exports = {
         stock,
         description,
         rentCount,
-        image1,
-        image2,
-        image3,
+        image1: !request.files.image1 ? "" : request.files.image1[0].filename,
+        image2: !request.files.image2 ? "" : request.files.image2[0].filename,
+        image3: !request.files.image3 ? "" : request.files.image3[0].filename,
       };
 
-      // console.log(data);
+      console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
       // console.log(result);
       return wrapper.response(
