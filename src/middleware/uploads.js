@@ -88,4 +88,32 @@ module.exports = {
       next();
     });
   },
+  testUpload: (request, response, next) => {
+    const storage = new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: "renta-project",
+        allowed_formats: ["jpg", "jpeg", "png"],
+      },
+    });
+
+    const upload = multer({ storage, limits: { fileSize: 500000 } }).fields([
+      { name: "image1", maxCount: 1 },
+      { name: "image2", maxCount: 1 },
+      { name: "image3", maxCount: 1 },
+    ]);
+
+    upload(request, response, (err) => {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return wrapper.response(response, 401, err.message, null);
+      }
+      if (err) {
+        // An unknown error occurred when uploading.
+        return wrapper.response(response, 401, err.message, null);
+      }
+      // Everything went fine.
+      next();
+    });
+  },
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const wrapper = require("../utils/wrapper");
 const vehicleModel = require("../models/vehicle");
 
@@ -70,8 +71,8 @@ module.exports = {
     try {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
-
-      if (request.files.length < 1) {
+      // console.log(Object.keys(request.files).length);
+      if (Object.keys(request.files).length < 1) {
         return wrapper.response(
           response,
           400,
@@ -81,8 +82,12 @@ module.exports = {
       }
 
       const images = [];
+      // eslint-disable-next-line array-callback-return
+      Object.keys(request.files).map((key) => {
+        images.push(request.files[key][0].filename);
+      });
 
-      request.files.map((image) => images.push(image.filename));
+      //   request.files.map((image) => images.push(image.filename));
 
       const data = {
         typeId,
