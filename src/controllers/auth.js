@@ -241,7 +241,7 @@ module.exports = {
         name,
         subject: "Reset Password",
         template: "forgotpw.html",
-        actionUrl: `http://localhost:3000/auth/change-password/${otp}`,
+        actionUrl: `http://localhost:3000/auth/password/reset/${otp}`,
       };
 
       client.set(`${otp}`, JSON.stringify(userId));
