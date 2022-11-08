@@ -8,6 +8,7 @@ const client = redis.createClient({
   },
   password: process.env.REDIS_PASSWORD,
 });
+// const client = redis.createClient();
 (async () => {
   client.connect();
   client.on("connect", () => {
