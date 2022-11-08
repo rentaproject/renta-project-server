@@ -1,7 +1,29 @@
 const connection = require("../config/postgresql");
 
 module.exports = {
-  // sort by ASC or DESC still not working
+  getCountVehicle: (obj) =>
+    new Promise((resolve, reject) => {
+      let { keyword, type } = obj;
+
+      keyword = keyword || "";
+      type = type || " ";
+
+      let sqlQuery = `SELECT COUNT(*) FROM vehicles WHERE name ilike '%' || $1 ||'%'`;
+      const sqlValues = [keyword];
+
+      if (type !== " " && type !== undefined) {
+        sqlQuery += ` AND "typeId" = $2`;
+        sqlValues.push(type);
+      }
+
+      connection.query(sqlQuery, sqlValues, (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
+        }
+      });
+    }),
   getAllVehicles: (keyword, limit, offset, orderBy, orderType, location) =>
     new Promise((resolve, reject) => {
       let i = 1;
@@ -68,6 +90,7 @@ module.exports = {
         }
       );
 
+      // DO NOT DELETE COMMENTED LINES BELOW! TQ
       // let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
       // const sqlValues = [
       //   data.typeId,
