@@ -21,9 +21,11 @@ module.exports = {
         orderType = "asc";
       }
 
-      const offset = page * limit - limit;
-      const countParams = { keyword };
+      const countParams = { keyword, location };
+
       const countData = await vehicleModel.getCountVehicle(countParams);
+
+      const offset = page * limit - limit;
       const totalData = Number(countData.rows[0].count);
       const totalPage = Math.ceil(totalData / limit);
       const pagination = {

@@ -3,20 +3,35 @@ const connection = require("../config/postgresql");
 module.exports = {
   getCountVehicle: (obj) =>
     new Promise((resolve, reject) => {
-      let { keyword, type } = obj;
+      let { keyword, type, location } = obj;
 
       keyword = keyword || "";
       type = type || " ";
+      location = location || " ";
 
-      let sqlQuery = `SELECT COUNT(*) FROM vehicles WHERE name ilike '%' || $1 ||'%'`;
+      let i = 2;
+      let sqlQuery = `SELECT COUNT(*) FROM vehicles`;
+      let sqlConditions = ` WHERE vehicles."name" ilike '%' || $1 ||'%'`;
       const sqlValues = [keyword];
 
-      if (type !== " " && type !== undefined) {
-        sqlQuery += ` AND "typeId" = $2`;
-        sqlValues.push(type);
+      // checking if there's locationId given
+      if (location !== " " && location !== undefined) {
+        sqlQuery += ` JOIN locations on vehicles."locationId" = locations."locationId"`;
+        sqlConditions += ` AND vehicles."locationId" = $${i}`;
+        sqlValues.push(location);
+        i += 1;
       }
 
-      connection.query(sqlQuery, sqlValues, (error, result) => {
+      // checking if there's typeId given
+      if (type !== " " && type !== undefined) {
+        sqlQuery += ` JOIN types on vehicles."typeId" = types."typeId"`;
+        sqlConditions += ` AND vehicles."typeId" = $${i}`;
+        sqlValues.push(type);
+        i += 1;
+      }
+
+      const finalQuery = sqlQuery + sqlConditions;
+      connection.query(finalQuery, sqlValues, (error, result) => {
         if (!error) {
           resolve(result);
         } else {
