@@ -72,6 +72,7 @@ module.exports = {
       },
       limits: { fileSize: largeSize },
     }).array("images", 3);
+    // }).single("image", { timeout: 600000 });
     // }).single("image");
     upload(request, response, (err) => {
       if (err instanceof multer.MulterError) {

@@ -22,7 +22,17 @@ module.exports = {
       }
 
       const offset = page * limit - limit;
-      // console.log(offset);
+      const countParams = { keyword };
+      const countData = await vehicleModel.getCountVehicle(countParams);
+      const totalData = Number(countData.rows[0].count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = {
+        page,
+        limit,
+        totalPage,
+        totalData,
+      };
+
       const result = await vehicleModel.getAllVehicles(
         keyword,
         limit,
@@ -35,11 +45,13 @@ module.exports = {
       if (result.rows.length < 1) {
         return wrapper.response(response, 404, "No data found", []);
       }
+
       return wrapper.response(
         response,
         200,
         "Success get all vehicle",
-        result.rows
+        result.rows,
+        pagination
       );
     } catch (error) {
       console.log(error);
@@ -71,23 +83,10 @@ module.exports = {
     try {
       const { typeId, name, status, price, stock, description, rentCount } =
         request.body;
-      // console.log(Object.keys(request.files).length);
-      if (Object.keys(request.files).length < 1) {
-        return wrapper.response(
-          response,
-          400,
-          "Bad request, add at least 1 image",
-          []
-        );
-      }
 
-      const images = [];
-      // eslint-disable-next-line array-callback-return
-      Object.keys(request.files).map((key) => {
-        images.push(request.files[key][0].filename);
-      });
-
-      //   request.files.map((image) => images.push(image.filename));
+      // const image1 = request.files.image1[0].filename;
+      // const image2 = request.files.image2[0].filename;
+      // const image3 = request.files.image3[0].filename;
 
       const data = {
         typeId,
@@ -97,11 +96,14 @@ module.exports = {
         stock,
         description,
         rentCount,
-        images,
+        image1: !request.files.image1 ? "" : request.files.image1[0].filename,
+        image2: !request.files.image2 ? "" : request.files.image2[0].filename,
+        image3: !request.files.image3 ? "" : request.files.image3[0].filename,
       };
 
+      console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
-
+      // console.log(result);
       return wrapper.response(
         response,
         200,
@@ -121,6 +123,11 @@ module.exports = {
       page = Number(page) || 1;
       limit = Number(limit) || 5;
 
+      const countParams = { type: id };
+      const countData = await vehicleModel.getCountVehicle(countParams);
+      const totalData = Number(countData.rows[0].count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = { page, limit, totalPage, totalData };
       const offset = page * limit - limit;
 
       const result = await vehicleModel.getVehicleByType(id, offset, limit);
@@ -129,7 +136,13 @@ module.exports = {
         return wrapper.response(response, 404, "No data found", []);
       }
 
-      return wrapper.response(response, 200, "Success get data", result.rows);
+      return wrapper.response(
+        response,
+        200,
+        "Success get data",
+        result.rows,
+        pagination
+      );
     } catch (error) {
       console.log(error);
 

@@ -117,7 +117,6 @@ module.exports = {
         newResult
       );
     } catch (error) {
-      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
@@ -206,11 +205,11 @@ module.exports = {
   logout: async (request, response) => {
     try {
       const authHeader = request.headers.authorization;
-      // const { refreshtoken } = request.headers;
+      const { refreshtoken } = request.headers;
 
       const token = authHeader.split(" ")[1];
       client.setEx(token, 3600 * 2, token);
-      // client.setEx(refreshtoken, 3600 * 2, refreshtoken);
+      client.setEx(refreshtoken, 3600 * 2, refreshtoken);
 
       return wrapper.response(response, 200, "Success Logout");
     } catch (error) {
@@ -242,7 +241,7 @@ module.exports = {
         name,
         subject: "Reset Password",
         template: "forgotpw.html",
-        actionUrl: `http://localhost:3000/auth/change-password/${otp}`,
+        actionUrl: `http://localhost:3000/auth/password/reset/${otp}`,
       };
 
       client.set(`${otp}`, JSON.stringify(userId));
@@ -354,7 +353,7 @@ module.exports = {
   updateUserData: async (request, response) => {
     try {
       const { id } = request.params;
-      const { username, gender, address, dateOfBirth, phoneNumber } =
+      const { name, username, gender, address, dateOfBirth, phoneNumber } =
         request.body;
 
       const checkId = await authModel.getUserByID(id);
@@ -364,11 +363,12 @@ module.exports = {
       }
       // const dateTime = updateTime.dateTime();
       const updateData = {
-        username,
-        gender,
-        address,
-        dateOfBirth,
-        phoneNumber,
+        name: name === ""||null?checkId.rows[0].name : name ,
+        username: username === ""||null?checkId.rows[0].username : username ,
+        gender: gender === ""||null?checkId.rows[0].gender : gender,
+        address: address === ""||null?checkId.rows[0].address : address,
+        dateOfBirth: dateOfBirth === ""||null?checkId.rows[0].dateOfBirth : dateOfBirth,
+        phoneNumber: phoneNumber === ""||null?checkId.rows[0].phoneNumber : phoneNumber,
       };
 
       await authModel.updateProfile(id, updateData);

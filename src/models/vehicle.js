@@ -1,7 +1,29 @@
 const connection = require("../config/postgresql");
 
 module.exports = {
-  // sort by ASC or DESC still not working
+  getCountVehicle: (obj) =>
+    new Promise((resolve, reject) => {
+      let { keyword, type } = obj;
+
+      keyword = keyword || "";
+      type = type || " ";
+
+      let sqlQuery = `SELECT COUNT(*) FROM vehicles WHERE name ilike '%' || $1 ||'%'`;
+      const sqlValues = [keyword];
+
+      if (type !== " " && type !== undefined) {
+        sqlQuery += ` AND "typeId" = $2`;
+        sqlValues.push(type);
+      }
+
+      connection.query(sqlQuery, sqlValues, (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
+        }
+      });
+    }),
   getAllVehicles: (keyword, limit, offset, orderBy, orderType, location) =>
     new Promise((resolve, reject) => {
       let i = 1;
@@ -44,41 +66,66 @@ module.exports = {
     }),
   addNewVehicle: (data) =>
     new Promise((resolve, reject) => {
-      let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
-      const sqlValues = [
-        data.typeId,
-        data.name,
-        data.status,
-        data.price,
-        data.stock,
-        data.description,
-        data.rentCount,
-        data.locationId,
-      ];
-
-      let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
-      const sqlQuery3 = `) RETURNING *`;
-      let i = 1;
-      let j = 9;
-
-      // eslint-disable-next-line array-callback-return
-      data.images.map((image) => {
-        sqlQuery1 += `, image${i}`;
-        sqlQuery2 += `, $${j}`;
-        sqlValues.push(image);
-        i += 1;
-        j += 1;
-      });
-
-      const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
-
-      connection.query(finalQuery, sqlValues, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(new Error(error));
+      connection.query(
+        `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId", image1, image2, image3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        [
+          data.typeId,
+          data.name,
+          data.status,
+          data.price,
+          data.stock,
+          data.description,
+          data.rentCount,
+          data.locationId,
+          data.image1,
+          data.image2,
+          data.image3,
+        ],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
         }
-      });
+      );
+
+      // DO NOT DELETE COMMENTED LINES BELOW! TQ
+      // let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
+      // const sqlValues = [
+      //   data.typeId,
+      //   data.name,
+      //   data.status,
+      //   data.price,
+      //   data.stock,
+      //   data.description,
+      //   data.rentCount,
+      //   data.locationId,
+      // ];
+
+      // let sqlQuery2 = `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8`;
+      // const sqlQuery3 = `) RETURNING *`;
+      // let i = 1;
+      // let j = 9;
+
+      // // eslint-disable-next-line array-callback-return
+      // data.images.map((image) => {
+      //   sqlQuery1 += `, image${i}`;
+      //   sqlQuery2 += `, $${j}`;
+      //   sqlValues.push(image);
+      //   i += 1;
+      //   j += 1;
+      // });
+
+      // const finalQuery = sqlQuery1 + sqlQuery2 + sqlQuery3;
+
+      // connection.query(finalQuery, sqlValues, (error, result) => {
+      //   if (!error) {
+      //     resolve(result);
+      //   } else {
+      //     reject(new Error(error));
+      //   }
+      // });
     }),
   getVehicleByType: (type, offset, limit) =>
     new Promise((resolve, reject) => {
