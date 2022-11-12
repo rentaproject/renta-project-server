@@ -10,13 +10,13 @@ module.exports = {
       location = location || " ";
 
       let i = 2;
-      let sqlQuery = `SELECT COUNT(*) FROM vehicles`;
-      let sqlConditions = ` WHERE vehicles."name" ilike '%' || $1 ||'%'`;
+      let sqlQuery = `SELECT COUNT(*) FROM vehicles JOIN locations on vehicles."locationId" = locations."locationId"`;
+      let sqlConditions = ` WHERE vehicles."name" ilike '%' || $1 ||'%' `;
       const sqlValues = [keyword];
 
       // checking if there's locationId given
       if (location !== " " && location !== undefined) {
-        sqlQuery += ` JOIN locations on vehicles."locationId" = locations."locationId"`;
+        // sqlQuery += ` JOIN locations on vehicles."locationId" = locations."locationId"`;
         sqlConditions += ` AND vehicles."locationId" = $${i}`;
         sqlValues.push(location);
         i += 1;
@@ -31,6 +31,7 @@ module.exports = {
       }
 
       const finalQuery = sqlQuery + sqlConditions;
+      console.log(finalQuery);
       connection.query(finalQuery, sqlValues, (error, result) => {
         if (!error) {
           resolve(result);
