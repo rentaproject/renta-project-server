@@ -83,8 +83,16 @@ module.exports = {
   },
   addNewVehicle: async (request, response) => {
     try {
-      const { typeId, name, status, price, stock, description, rentCount } =
-        request.body;
+      const {
+        typeId,
+        name,
+        status,
+        price,
+        stock,
+        description,
+        rentCount,
+        locationId,
+      } = request.body;
 
       // const image1 = request.files.image1[0].filename;
       // const image2 = request.files.image2[0].filename;
@@ -92,6 +100,7 @@ module.exports = {
 
       const data = {
         typeId,
+        locationId,
         name,
         status,
         price,
