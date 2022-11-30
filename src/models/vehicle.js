@@ -1,7 +1,45 @@
 const connection = require("../config/postgresql");
 
 module.exports = {
-  // sort by ASC or DESC still not working
+  getCountVehicle: (obj) =>
+    new Promise((resolve, reject) => {
+      let { keyword, type, location } = obj;
+
+      keyword = keyword || "";
+      type = type || " ";
+      location = location || " ";
+
+      let i = 2;
+      let sqlQuery = `SELECT COUNT(*) FROM vehicles JOIN locations on vehicles."locationId" = locations."locationId"`;
+      let sqlConditions = ` WHERE vehicles."name" ilike '%' || $1 ||'%' `;
+      const sqlValues = [keyword];
+
+      // checking if there's locationId given
+      if (location !== " " && location !== undefined) {
+        // sqlQuery += ` JOIN locations on vehicles."locationId" = locations."locationId"`;
+        sqlConditions += ` AND vehicles."locationId" = $${i}`;
+        sqlValues.push(location);
+        i += 1;
+      }
+
+      // checking if there's typeId given
+      if (type !== " " && type !== undefined) {
+        sqlQuery += ` JOIN types on vehicles."typeId" = types."typeId"`;
+        sqlConditions += ` AND vehicles."typeId" = $${i}`;
+        sqlValues.push(type);
+        i += 1;
+      }
+
+      const finalQuery = sqlQuery + sqlConditions;
+      console.log(finalQuery);
+      connection.query(finalQuery, sqlValues, (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
+        }
+      });
+    }),
   getAllVehicles: (keyword, limit, offset, orderBy, orderType, location) =>
     new Promise((resolve, reject) => {
       let i = 1;
@@ -68,6 +106,7 @@ module.exports = {
         }
       );
 
+      // DO NOT DELETE COMMENTED LINES BELOW! TQ
       // let sqlQuery1 = `INSERT INTO vehicles ("typeId", name, status, price, stock, description, "rentCount", "locationId"`;
       // const sqlValues = [
       //   data.typeId,

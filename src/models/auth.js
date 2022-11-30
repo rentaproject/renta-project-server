@@ -84,8 +84,9 @@ module.exports = {
   updateProfile: (userId, data) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET username=$1, gender=$2, address=$3, "dateOfBirth"=$4, "phoneNumber"=$5 WHERE "userId"=$6`,
+        `UPDATE users SET name=$1, username=$2, gender=$3, address=$4, "dateOfBirth"=$5, "phoneNumber"=$6 WHERE "userId"=$7`,
         [
+          data.name,
           data.username,
           data.gender,
           data.address,

@@ -21,8 +21,20 @@ module.exports = {
         orderType = "asc";
       }
 
+      const countParams = { keyword, location };
+
+      const countData = await vehicleModel.getCountVehicle(countParams);
+
       const offset = page * limit - limit;
-      // console.log(offset);
+      const totalData = Number(countData.rows[0].count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = {
+        page,
+        limit,
+        totalPage,
+        totalData,
+      };
+
       const result = await vehicleModel.getAllVehicles(
         keyword,
         limit,
@@ -35,11 +47,13 @@ module.exports = {
       if (result.rows.length < 1) {
         return wrapper.response(response, 404, "No data found", []);
       }
+
       return wrapper.response(
         response,
         200,
         "Success get all vehicle",
-        result.rows
+        result.rows,
+        pagination
       );
     } catch (error) {
       console.log(error);
@@ -89,7 +103,7 @@ module.exports = {
         image3: !request.files.image3 ? "" : request.files.image3[0].filename,
       };
 
-      // console.log(data);
+      console.log(data);
       const result = await vehicleModel.addNewVehicle(data);
       // console.log(result);
       return wrapper.response(
@@ -111,6 +125,11 @@ module.exports = {
       page = Number(page) || 1;
       limit = Number(limit) || 5;
 
+      const countParams = { type: id };
+      const countData = await vehicleModel.getCountVehicle(countParams);
+      const totalData = Number(countData.rows[0].count);
+      const totalPage = Math.ceil(totalData / limit);
+      const pagination = { page, limit, totalPage, totalData };
       const offset = page * limit - limit;
 
       const result = await vehicleModel.getVehicleByType(id, offset, limit);
@@ -119,7 +138,13 @@ module.exports = {
         return wrapper.response(response, 404, "No data found", []);
       }
 
-      return wrapper.response(response, 200, "Success get data", result.rows);
+      return wrapper.response(
+        response,
+        200,
+        "Success get data",
+        result.rows,
+        pagination
+      );
     } catch (error) {
       console.log(error);
 

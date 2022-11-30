@@ -241,7 +241,7 @@ module.exports = {
         name,
         subject: "Reset Password",
         template: "forgotpw.html",
-        actionUrl: `http://localhost:3000/auth/change-password/${otp}`,
+        actionUrl: `http://localhost:3000/auth/password/reset/${otp}`,
       };
 
       client.set(`${otp}`, JSON.stringify(userId));
@@ -353,7 +353,7 @@ module.exports = {
   updateUserData: async (request, response) => {
     try {
       const { id } = request.params;
-      const { username, gender, address, dateOfBirth, phoneNumber } =
+      const { name, username, gender, address, dateOfBirth, phoneNumber } =
         request.body;
 
       const checkId = await authModel.getUserByID(id);
@@ -363,6 +363,7 @@ module.exports = {
       }
       // const dateTime = updateTime.dateTime();
       const updateData = {
+        name: name === ""||null?checkId.rows[0].name : name ,
         username: username === ""||null?checkId.rows[0].username : username ,
         gender: gender === ""||null?checkId.rows[0].gender : gender,
         address: address === ""||null?checkId.rows[0].address : address,
