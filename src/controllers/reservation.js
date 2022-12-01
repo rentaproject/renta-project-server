@@ -39,7 +39,7 @@ module.exports = {
       const newResult = result.rows;
       const insertUrl = await reservationModel.insertUrl({
         status: resultMidtrans.redirect_url,
-        id: newResult.reservationId,
+        // id: newResult.reservationId,
       });
       console.log(newResult);
       return wrapper.response(response, 200, "success create reservation", {
