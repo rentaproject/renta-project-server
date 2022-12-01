@@ -83,8 +83,8 @@ module.exports = {
   insertUrl: (data) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `UPDATE reservation SET "midtrans" VALUES $1 WHERE "reservationId" = $2 RETURNING *`,
-        [data.status, data.id],
+        `INSERT INTO reservation ("midtrans") VALUES ($1)  RETURNING *`,
+        [data.status],
         (error, result) => {
           if (!error) {
             resolve(result);
