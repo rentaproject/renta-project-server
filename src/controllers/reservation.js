@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const wrapper = require("../utils/wrapper");
 const reservationModel = require("../models/reservation");
 // const vehicleModel = require("../models/vehicle");
@@ -30,16 +31,21 @@ module.exports = {
 
       const setDataMidtrans = {
         // id: result.rows.reservationId,
-        id: 1,
+        id: uuidv4(),
         totalPayment,
       };
 
       const resultMidtrans = await snapMidtrans.post(setDataMidtrans);
       const newResult = result.rows;
-
+      const insertUrl = await reservationModel.insertUrl({
+        status: resultMidtrans.redirect_url,
+        id: newResult.reservationId,
+      });
+      console.log(newResult);
       return wrapper.response(response, 200, "success create reservation", {
         newResult,
         redirectUrl: resultMidtrans.redirect_url,
+        insertUrl,
       });
     } catch (error) {
       console.log(error);
@@ -90,8 +96,10 @@ module.exports = {
   getReservationByUserId: async (request, response) => {
     try {
       const { id } = request.params;
+      let { keyword } = request.query;
+      keyword = keyword || "";
 
-      const result = await reservationModel.getReservationUserById(id);
+      const result = await reservationModel.getReservationUserById(id, keyword);
 
       if (result.rowCount < 1) {
         return wrapper.response(response, 404, "no data found", []);

@@ -52,11 +52,11 @@ module.exports = {
         }
       );
     }),
-  getReservationUserById: (id) =>
+  getReservationUserById: (id, keyword) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM getreservationWithVehicle WHERE "userId" = $1`,
-        [id],
+        `SELECT * FROM getreservationWithVehicle WHERE "userId" = $1 and name ilike '%' || $2 ||'%'`,
+        [id, keyword],
         (error, result) => {
           if (!error) {
             resolve(result);
@@ -70,6 +70,20 @@ module.exports = {
     new Promise((resolve, reject) => {
       connection.query(
         `UPDATE reservation SET "status" = $1  WHERE "reservationId" = $2 RETURNING *`,
+        [data.status, data.id],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    }),
+  insertUrl: (data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE reservation SET "midtrans" VALUES $1 WHERE "reservationId" = $2 RETURNING *`,
         [data.status, data.id],
         (error, result) => {
           if (!error) {
